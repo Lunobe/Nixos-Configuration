@@ -18,7 +18,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 20;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;
 
   # -- store cleanup (after every rebuild) --
   # configurationLimit above already prunes generations older than the
@@ -88,6 +88,7 @@
   systemd.tmpfiles.rules = [
     "z /.snapshots 0750 root root -"
     "z /home/.snapshots 0750 root root -"
+    "Z /etc/nixos - lunobe users -"
   ];
 
   services.printing.enable = true;
