@@ -59,37 +59,22 @@
     functions = {
       update = ''
         pushd /etc/nixos
-        sgit add .
-        sgit commit -m "checkpoint before update" || true
+        git add .
+        git commit -m "checkpoint before update" || true
         sudo nix flake update
-        sgit add flake.lock
-        sgit commit -m "flake: update inputs" || true
+        git add flake.lock
+        git commit -m "flake: update inputs" || true
         sudo nixos-rebuild switch --flake .#nixos
-        sgit push origin main
+        git push origin main
         flatpak update -y
         popd
-      '';
-
-      gnuke = ''
-        set dir (pwd)
-        set branch (git -c safe.directory=$dir rev-parse --abbrev-ref HEAD)
-        sgit checkout --orphan _temp
-        sgit add .
-        sgit commit -m "initial"
-        sgit branch -D $branch
-        sgit branch -m $branch
-        sgit -c safe.directory=$dir push --force origin $branch
       '';
     };
 
     shellAliases = {
-      dandoyouliketokissmyhouse   = "pushd /etc/nixos && gnuke && update && clean && popd";
-
-      sgit   = "sudo -E git";
       svim   = "sudo -E vim";
       svi    = "sudo -E vi";
       cat    = "bat -P --theme zenburn";
-      clean  = "nix-collect-garbage -d && sudo nix-collect-garbage -d && flatpak remove --unused -y";
       "..." = "cd ../..";
       "...." = "cd ../../..";
 

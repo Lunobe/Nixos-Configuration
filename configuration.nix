@@ -16,8 +16,18 @@
   # -- boot --
 
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 20;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # -- store cleanup (after every rebuild) --
+  # configurationLimit above already prunes generations older than the
+  # limit and their /boot entries on every switch/boot. This just collects
+  # the /nix/store paths that become orphaned as a result.
+
+  system.activationScripts.pruneStoreGarbage.text = ''
+    ${pkgs.nix}/bin/nix-collect-garbage
+  '';
 
   # -- networking --
 
