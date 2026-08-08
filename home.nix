@@ -61,10 +61,14 @@
         pushd /etc/nixos
         git add .
         git commit -m "checkpoint before update" || true
-        sudo nix flake update
+        nix flake update
         git add flake.lock
         git commit -m "flake: update inputs" || true
-        sudo nixos-rebuild switch --flake .#nixos
+        if not sudo nixos-rebuild switch --flake .#nixos
+          echo "nixos-rebuild switch failed, skipping push and flatpak update"
+          popd
+          return 1
+        end
         git push origin main
         flatpak update -y
         popd

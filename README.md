@@ -60,5 +60,5 @@
    > **GitHub → Settings → SSH and GPG keys → New SSH key**
 
    ```fish
-   git -c safe.directory=/etc/nixos push -u origin main
+   git push -u origin main
    ```
