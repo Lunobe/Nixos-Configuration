@@ -33,6 +33,7 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
+      RemainAfterExit = true;
       ExecStart = "${pkgs.nix}/bin/nix-collect-garbage";
     };
   };
