@@ -20,14 +20,22 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages;
 
-  # -- store cleanup (after every rebuild) --
+  # -- store cleanup (once per boot) --
   # configurationLimit above already prunes generations older than the
   # limit and their /boot entries on every switch/boot. This just collects
-  # the /nix/store paths that become orphaned as a result.
+  # the /nix/store paths that become orphaned as a result, on boot rather
+  # than on every switch (so back-to-back `nixos-rebuild switch` runs
+  # without a reboot in between don't keep re-fetching/re-deleting the
+  # same flake-eval sources).
 
-  system.activationScripts.pruneStoreGarbage.text = ''
-    ${pkgs.nix}/bin/nix-collect-garbage
-  '';
+  systemd.services.nix-gc-boot = {
+    description = "Garbage-collect orphaned Nix store paths";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.nix}/bin/nix-collect-garbage";
+    };
+  };
 
   # -- networking --
 
